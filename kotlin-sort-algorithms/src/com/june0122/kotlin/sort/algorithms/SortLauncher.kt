@@ -32,6 +32,8 @@ class SortLauncher {
     private fun getAlgorithmsList(): Array<SortAlgorithm> {
         return arrayOf(
             SelectionSort(),
+            BubbleSort(),
+            InsertionSort(),
         )
     }
 }
