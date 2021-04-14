@@ -34,6 +34,8 @@ class SortLauncher {
             SelectionSort(),
             BubbleSort(),
             InsertionSort(),
+            QuickSort(),
+            MergeSort(),
         )
     }
 }
