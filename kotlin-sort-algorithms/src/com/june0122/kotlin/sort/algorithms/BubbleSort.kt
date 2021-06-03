@@ -10,7 +10,7 @@ package com.june0122.kotlin.sort.algorithms
 class BubbleSort : SortAlgorithm {
     override fun sort(arr: Array<Int>): Array<Int> {
         for (i in arr.indices) {
-            for (j in 1 until arr.size) {
+            for (j in 1 until arr.size - i) {
                 if (arr[j - 1] > arr[j]) {
                     arr[j - 1] = arr[j].also { arr[j] = arr[j - 1] }  // swap(arr, j-1, j) 도 가능
                 }
