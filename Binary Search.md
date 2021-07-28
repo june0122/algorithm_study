@@ -129,7 +129,102 @@ private static int binarySearch0(int[] a, int fromIndex, int toIndex, int key) {
 
 ### [BOJ 10816, 숫자 카드2](https://www.acmicpc.net/problem/10816)
 
+- 삽입하는 수가 주어질 때, 오름차순 순서가 유지되는 제일 왼쪽 인덱스와 제일 오른쪽의 인덱스의 차이가 해당 배열에서 그 수의 등장 횟수가 되는 성질을 이용
 
+> `Scanner`를 통한 입력 받기 (시간 초과)
+
+```kotlin
+import java.util.Scanner
+
+var n = 0
+var m = 0
+lateinit var a : IntArray
+lateinit var b : IntArray
+
+fun main() {
+    init()
+    a.sort()
+    b.forEach {
+        print("${upperIndex(it) - lowerIndex(it)} ")
+    }
+}
+
+fun lowerIndex(target: Int): Int {
+    var st = 0
+    var en = a.size
+
+    while (st < en) {
+        val mid = (st + en) / 2
+        if (a[mid] >= target) en = mid
+        else st = mid + 1
+    }
+    return st
+}
+
+fun upperIndex(target: Int): Int {
+    var st = 0
+    var en = a.size
+
+    while (st < en) {
+        val mid = (st + en) / 2
+        if (a[mid] > target) en = mid
+        else st = mid + 1
+    }
+    return st
+}
+
+fun init() = with(Scanner(System.`in`)) {
+    n = nextInt()
+    a = IntArray(n + 1)
+    for (i in 0 until n) {
+        a[i] = nextInt()
+    }
+    m = nextInt()
+    b = IntArray(m)
+    for (i in 0 until m) {
+        b[i] = nextInt()
+    }
+}
+```
+
+> `readLine()`을 통한 입력 받기 (통과)
+
+- 가독성이 좋아 Scanner를 통해 입력을 받는 방식을 BOJ에서 자주 사용하지만 다른 입력 방식들에 비해 느리기 때문에 시간 초과가 발생할 경우 `readLine()`을 이용하는 방법 등을 사용한다.
+
+```kotlin
+lateinit var a: IntArray
+
+fun main() {
+    readLine()
+    a = readLine()!!.split(" ").map { it.toInt() }.sorted().toIntArray()
+    readLine()
+    print(readLine()!!.split(" ").map { it.toInt() }.map { upperBound(it) - lowerBound(it) }.joinToString(" "))
+}
+
+fun lowerBound(target: Int): Int {
+    var st = 0
+    var en = a.size
+
+    while (st < en) {
+        val mid = (st + en) / 2
+        if (a[mid] >= target) en = mid
+        else st = mid + 1
+    }
+    return st
+}
+
+fun upperBound(target: Int): Int {
+    var st = 0
+    var en = a.size
+
+    while (st < en) {
+        val mid = (st + en) / 2
+        if (a[mid] > target) en = mid
+        else st = mid + 1
+    }
+    return st
+}
+```
 
 
 
@@ -144,7 +239,3 @@ private static int binarySearch0(int[] a, int fromIndex, int toIndex, int key) {
 ## 연습 문제
 
 ### [BOJ 18870, 좌표 압축](https://www.acmicpc.net/problem/18870)
-
-```kotlin
-
-```
