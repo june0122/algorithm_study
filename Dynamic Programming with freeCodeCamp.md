@@ -234,3 +234,211 @@ public actual operator fun IntArray.plus(element: Int): IntArray {
 <p align = 'center'>
 <img width = '600' src = 'https://user-images.githubusercontent.com/39554623/135742496-00960484-361a-41bc-8f3e-6335378d6c71.png'>
 </p>
+
+### Brute Force
+
+```kotlin
+fun bestSum(targetSum: Int, nums: IntArray): IntArray? {
+    if (targetSum == 0) return intArrayOf()
+    if (targetSum < 0) return null
+
+    var shortestCombination: IntArray? = null
+
+    for (num in nums) {
+        val remainder = targetSum - num
+        val remainderCombination = bestSum(remainder, nums)
+        if (remainderCombination != null) {
+            val combination = remainderCombination + num
+            if (shortestCombination == null || combination.size < shortestCombination.size) {
+                shortestCombination = combination
+            }
+        }
+    }
+
+    return shortestCombination
+}
+```
+
+`m = targetSum`, `n = nums.length`
+
+- time complexity : O(n<sup>m</sup> * m)
+- space complexity : O(m * m) = O(m<sup>2</sup>)
+  - 변수 `shortestCombination`으로 인해 m을 곱해야 한다.
+
+
+### Memoization
+
+```kotlin
+fun bestSum(targetSum: Int, nums: IntArray, memo: HashMap<Int, IntArray?> = HashMap()): IntArray? {
+    if (targetSum in memo) return memo.getValue(targetSum)
+    if (targetSum == 0) return intArrayOf()
+    if (targetSum < 0) return null
+
+    var shortestCombination: IntArray? = null
+
+    for (num in nums) {
+        val remainder = targetSum - num
+        val remainderCombination = bestSum(remainder, nums, memo)
+        if (remainderCombination != null) {
+            val combination = remainderCombination + num
+            if (shortestCombination == null || combination.size < shortestCombination.size) {
+                shortestCombination = combination
+            }
+        }
+    }
+
+    memo[targetSum] = shortestCombination
+    return shortestCombination
+}
+```
+
+```
+bestSum(7, intArrayOf(5, 3, 4 ,7))    // [7]
+bestSum(8, intArrayOf(2, 3, 5))       // [5, 3]
+bestSum(8, intArrayOf(1, 4, 5))       // [4, 4]
+bestSum(100, intArrayOf(1, 2, 5, 25)  // [25, 25, 25, 25]
+```
+
+`m = targetSum`, `n = nums.length`
+
+- time complexity : O(n * m * m) = O(n * m<sup>2</sup>)
+- space complexity : O(m * m) = O(m<sup>2</sup>)
+
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/135782247-c51a86e8-082e-4bf7-a8e0-3d56ed8cb58c.png'>
+</p>
+
+- `canSum` : "Can you do it? yes or no"           ->   <b>Decision Problem</b>
+- `howSum` : "How will you do it?"                ->   <b>Combinatoric Problem<small>(조합론적 문제)</small></b>
+- `bestSum` : "What is the 'best' way to do it?"  ->   <b>Optimization Problem</b>
+
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/135782459-832340db-1452-40d1-874c-4436b2043318.png'>
+</p>
+
+Dynamic Programming problems aren't just limited to number inputs.
+
+## canConstruct memoization
+
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/135782725-5945dec9-0d68-4d4f-8e2c-26a42e615fd3.png'>
+</p>
+
+```kotlin
+canConstruct("", arrayOf("cat", "dog", "mouse")) // true
+canConstruct("abcdef", arrayOf("ab", "abc", "cd", "def", "abcd")) // true
+```
+
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/135783101-1b128240-4f84-40bb-9ff0-7e71aa9f2813.png'>
+</p>
+
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/135783760-2f2037bc-2e87-4bcc-8065-7772b7b5ac28.png'>
+</p>
+
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/135784031-6945783b-638d-4ea8-88b3-8f9e76f81395.png'>
+</p>
+
+## Brute Force
+
+```kotlin
+fun canConstruct(target: String, wordBank: Array<String>): Boolean {
+    if (target == "") return true
+
+    for (word in wordBank) {
+        if (target.indexOf(word) == 0) {
+            val suffix = target.substring(word.length)
+            if (canConstruct(suffix, wordBank)) return true
+        }
+    }
+
+    return false
+}
+```
+
+> `CharSequence.indexOf(…)`
+
+```kotlin
+/*
+Returns the index within this char sequence of the first occurrence of the specified string, starting from the specified startIndex.
+Params: ignoreCase - true to ignore character case when matching a string. By default false.
+Returns: An index of the first occurrence of string or -1 if none is found.
+Samples: samples.text.Strings.indexOf
+*/
+public fun CharSequence.indexOf(string: String, startIndex: Int = 0, ignoreCase: Boolean = false): Int {
+    return if (ignoreCase || this !is String)
+        indexOf(string, startIndex, length, ignoreCase)
+    else
+        nativeIndexOf(string, startIndex)
+}
+```
+
+```kotlin
+"potato".indexOf("pot")  // 0
+"potato".indexOf("ota")  // 1
+"potato".indexOf("to")   // 4
+"potato".indexOf("rot")  // -1
+```
+
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/135787025-630891dd-c702-4b05-89b1-f9d4473155a1.png'>
+</p>
+
+`m = target.length`, `n = workBank.size`
+
+- time complexity : O(n<sup>m</sup> * m)
+  - n<sup>m</sup>에 `target.substring(word.length)`가 최악의 경우 추가적인 m 연산을 하므로 n<sup>m</sup> * m
+  - java `substring`의 시간복잡도는 O(n)
+- space complexity : O(m * m) = O(m<sup>2</sup>)
+  - 트리의 높이는 최대 스택 프레임 수를 의미한다.
+  - 트리의 높이 `m` * substring이 반환하는 새로운 문자열의 길이가 최대 `m`
+
+## Memoization
+
+```kotlin
+fun canConstruct(target: String, wordBank: Array<String>, memo: HashMap<String, Boolean> = HashMap()): Boolean {
+    if (target in memo) return memo.getValue(target)
+    if (target == "") return true
+
+    for (word in wordBank) {
+        if (target.indexOf(word) == 0) {
+            val suffix = target.substring(word.length)
+            if (canConstruct(suffix, wordBank, memo)) {
+                memo[target] = true
+                return true
+            }
+        }
+    }
+
+    memo[target] = false
+    return false
+}
+```
+
+```
+canConstruct("", arrayOf("cat", "dog", "mouse")) // true
+canConstruct("abcdef", arrayOf("ab", "abc", "cd", "def", "abcd")) // true
+canConstruct("skateboard", arrayOf("bo", "rd", "ate", "t", "ska", "sk", "boar")) // false
+canConstruct("enterapotentpot", arrayOf("a", "p", "ent", "enter", "ot", "o", "t")) // true
+canConstruct(
+    "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeef",
+    arrayOf("e", "ee", "eee", "eeee", "eeeee", "eeeeee")
+) // false
+```
+
+`m = target.length`, `n = workBank.size`
+
+- time complexity : O(n * m * m) = O(n * m<sup>2</sup>)
+- space complexity : O(m * m) = O(m<sup>2</sup>)
+
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/135787846-f097859a-1d5a-4cfb-a842-3ffa8dd5d92d.png'>
+</p>
+
+## countConstruct memoization
+
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/135787959-1d78b100-43b0-497b-bad2-5d9acfb67307.png'>
+</p>
