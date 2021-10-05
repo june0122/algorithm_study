@@ -442,3 +442,159 @@ canConstruct(
 <p align = 'center'>
 <img width = '600' src = 'https://user-images.githubusercontent.com/39554623/135787959-1d78b100-43b0-497b-bad2-5d9acfb67307.png'>
 </p>
+
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/135939496-ac77f2cc-345e-4a0d-99d6-5a6ffe32d7c1.png'>
+</p>
+
+### Brute Force
+
+```kotlin
+fun countConstruct(target: String, wordBank: Array<String>): Int {
+    if (target == "") return 1
+
+    var count = 0
+
+    for (word in wordBank) {
+        if (target.indexOf(word) == 0) {
+            val suffix = target.substring(word.length)
+            val numWaysForRest = countConstruct(suffix, wordBank)
+            count += numWaysForRest
+        }
+    }
+
+    return count
+}
+```
+
+`m = target.length`, `n = workBank.size`
+
+- time complexity : O(n<sup>m</sup> * m)
+  - n<sup>m</sup>에 `target.substring(word.length)`가 최악의 경우 추가적인 m 연산을 하므로 n<sup>m</sup> * m
+  - java `substring`의 시간복잡도는 O(n)
+- space complexity : O(m * m) = O(m<sup>2</sup>)
+  - 트리의 높이는 최대 스택 프레임 수를 의미한다.
+  - 트리의 높이 `m` * substring이 반환하는 새로운 문자열의 길이가 최대 `m`
+
+## Memoization
+
+```kotlin
+fun countConstruct(target: String, wordBank: Array<String>, memo: HashMap<String, Int> = HashMap()): Int {
+    if (target in memo) return memo.getValue(target)
+    if (target == "") return 1
+
+    var count = 0
+
+    for (word in wordBank) {
+        if (target.indexOf(word) == 0) {
+            val suffix = target.substring(word.length)
+            val numWaysForRest = countConstruct(suffix, wordBank, memo)
+            count += numWaysForRest
+        }
+    }
+
+    memo[target] = count
+    return count
+}
+```
+
+```
+countConstruct("", arrayOf("cat", "dog", "mouse"))                                    // 1
+countConstruct("purple", arrayOf("purp", "p", "ur", "le", "purpl"))                   // 2
+countConstruct("abcdef", arrayOf("ab", "abc", "cd", "def", "abcd"))                   // 1
+countConstruct("skateboard", arrayOf("bo", "rd", "ate", "t", "ska", "sk", "boar"))    // 0
+countConstruct("enterapotentpot", arrayOf("a", "p", "ent", "enter", "ot", "o", "t"))  // 4
+countConstruct(
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeef",
+        arrayOf("e", "ee", "eee", "eeee", "eeeee", "eeeeee")
+) // 0
+```
+
+`m = target.length`, `n = workBank.size`
+
+- time complexity : O(n * m * m) = O(n * m<sup>2</sup>)
+- space complexity : O(m * m) = O(m<sup>2</sup>)
+
+## allConstruct memoization
+
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/135943563-57170230-3a01-4f27-9dc9-c94f1b3f927e.png'>
+</p>
+
+### Brute Force
+
+```kotlin
+fun allConstruct(target: String, wordBank: Array<String>): Array<Array<String>> {
+    if (target == "") return arrayOf(arrayOf())
+
+    var result = arrayOf<Array<String>>()
+
+    for (word in wordBank) {
+        if (target.indexOf(word) == 0) {
+            val suffix = target.substring(word.length)
+            val suffixWays = allConstruct(suffix, wordBank)
+            val targetWays = suffixWays.map { way -> arrayOf(word) + way }
+            result += targetWays
+        }
+    }
+
+    return result
+}
+```
+
+### Memoization
+
+```kotlin
+fun allConstruct(target: String, wordBank: Array<String>, memo: HashMap<String, Array<Array<String>>> = HashMap()): Array<Array<String>> {
+    if (target in memo) return memo.getValue(target)
+    if (target == "") return arrayOf(arrayOf())
+
+    var result = arrayOf<Array<String>>()
+
+    for (word in wordBank) {
+        if (target.indexOf(word) == 0) {
+            val suffix = target.substring(word.length)
+            val suffixWays = allConstruct(suffix, wordBank, memo)
+            val targetWays = suffixWays.map { way -> arrayOf(word) + way }
+            result += targetWays
+        }
+    }
+
+    memo[target] = result
+    return result
+}
+```
+
+```kotlin
+println(allConstruct("purple", arrayOf("purp", "p", "ur", "le", "purpl")).contentDeepToString())
+println(allConstruct("abcdef", arrayOf("ab", "abc", "cd", "def", "abcd", "ef", "c")).contentDeepToString())
+println(allConstruct("skateboard", arrayOf("bo", "rd", "ate", "t", "ska", "sk", "boar")).contentDeepToString())
+println(
+    allConstruct(
+        "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeef",
+        arrayOf("e", "ee", "eee", "eeee", "eeeee", "eeeeee")
+    ).contentDeepToString()
+)
+```
+
+```
+[[purp, le], [p, ur, p, le]]
+[[ab, cd, ef], [ab, c, def], [abc, def], [abcd, ef]]
+[]
+[]
+```
+
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/135952395-74cd38ab-c8c4-43e0-a658-812d464d06ed.png'>
+</p>
+
+`m = target.length`, `n = wordBank.size`
+
+- time complexity : O(n<sup>m</sup>)
+  - O(n<sup>m</sup>) leaves = O(n<sup>m</sup>) combinations = O(n<sup>m</sup>) subarrays
+- space complexity : O(m)
+
+target 문자열을 만드는 모든 조합을 반환해야하므로 worst case에 큰 영향을 끼치지 못한다. memoization을 해도 약간의 최적화만이 이루어진다. 즉, 브루트 포스든 메모이제이션이든 어떤 방법을 사용해도 위와 같은 시간 복잡도를 가진다.
+
+## fib tabulation
+
