@@ -598,3 +598,26 @@ target 문자열을 만드는 모든 조합을 반환해야하므로 worst case�
 
 ## fib tabulation
 
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/136392579-1d8e3f06-ff00-4969-b335-fb4607e1234d.png'>
+</p>
+
+```kotlin
+fun fib(n: Int): Long {
+    val table = LongArray(n + 3)
+    table[1] = 1
+
+    for (i in 0..n) {
+        table[i + 1] += table[i]
+        table[i + 2] += table[i]
+    }
+
+    return table[n]
+}
+```
+
+- time complexity : O(n)
+- space complexity : O(n)
+
+## gridTraveler tabulation
+
