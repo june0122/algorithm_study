@@ -621,3 +621,72 @@ fun fib(n: Int): Long {
 
 ## gridTraveler tabulation
 
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/136473343-7744320a-321b-4138-99ca-fd08744d7a46.png'>
+</p>
+
+```kotlin
+fun gridTraveler(m: Int, n: Int): Long {
+    val table = Array(m + 1) { LongArray(n + 1) }
+    table[1][1] = 1
+
+    for (i in 0..m) {
+        for (j in 0..n) {
+            val current = table[i][j]
+            if (j + 1 <= n) table[i][j + 1] += current
+            if (i + 1 <= m) table[i + 1][j] += current
+        }
+    }
+
+    return table[m][n]
+}
+```
+```kotlin
+println(gridTraveler(1, 1)) // 1
+println(gridTraveler(2, 3)) // 3
+println(gridTraveler(3, 2)) // 3
+println(gridTraveler(3, 3)) // 6
+println(gridTraveler(18, 18)) // 2333606220
+```
+
+- time complexity : O(mn)
+- space complexity : O(mn)
+
+## tabulation recipe
+
+- visualize the problem as a table
+- size the table based on the inputs
+- initialize the table with default values
+- seed the trivial answer into the table
+- iterate through the table
+- fill further positions based on the current position
+
+## canSum tabulation
+
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/136476661-85eb7857-e2f7-4a9d-99c0-b10fd79e3aa5.png'>
+</p>
+
+<p align = 'center'>
+<img width = '600' src = 'https://user-images.githubusercontent.com/39554623/136477241-76077639-d5ae-44c4-a1ea-68fa26a05abe.png'>
+</p>
+
+- time complexity : O(mn)
+- space complexity : O(m)
+
+```kotlin
+fun canSum(targetSum: Int, nums: IntArray): Boolean {
+    val table = BooleanArray(targetSum + 1 + nums.maxOrNull()!!)
+    table[0] = true
+
+    for (i in 0..targetSum) {
+        if (table[i]) {
+            for (num in nums) {
+                table[i + num] = true
+            }
+        }
+    }
+
+    return table[targetSum]
+}
+```
