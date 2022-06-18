@@ -39,3 +39,23 @@ fun solution(A: IntArray, K: Int): IntArray {
 ```
 
 IntArray A의 크기가 0인 경우 `java.lang.ArithmeticException: / by zero`이 발생하므로 A가 0인 경우 회전하지 않도록 값을 0으로 설정해줘야 한다.
+
+```kotlin
+import java.util.*
+
+fun solution(arr: IntArray, n: Int): IntArray {
+    if (arr.isEmpty()) return intArrayOf()
+
+    val deque = ArrayDeque<Int>()
+
+    arr.forEach {
+        deque.add(it)
+    }
+
+    repeat(n) {
+        val temp = deque.removeLast()
+        deque.addFirst(temp)
+    }
+
+    return deque.map { it }.toIntArray()
+```

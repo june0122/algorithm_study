@@ -83,3 +83,22 @@ fun solution(N: Int): Int {
 대부분의 코딩 사이트는 **kotlin 1.4**를 지원하지 않는데 1.4 기준으로는 아래처럼 사용하거나 사용할 수 있다.
 - `removeAt(zeroList.size - 1)` -> `zeroList.removeLast()`
 - `max()` -> `maxOrNull()`
+
+```kotlin
+fun solution(N: Int): Int {
+    val binary = N.toString(2)
+    val list = mutableListOf<Int>()
+    var max = 0
+
+    binary.forEachIndexed { idx, v ->
+        if (v == '1') list.add(idx)
+    }
+
+    for (i in list.size - 1 downTo 1) {
+        val gap = list[i] - list[i - 1] - 1
+        max = Math.max(max, gap)
+    }
+
+    return max
+}
+```
