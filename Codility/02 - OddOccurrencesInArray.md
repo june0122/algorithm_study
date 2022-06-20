@@ -40,6 +40,23 @@ fun solution(A: IntArray): Int {
 <img width = '400' src = 'https://user-images.githubusercontent.com/39554623/119299593-27951800-bc9a-11eb-92a9-150c587edccc.png'>
 </p>
 
+> 세 번째 시도 : HashSet 이용
+
+```kotlin
+fun solution(arr: IntArray): Int {
+    val set = HashSet<Int>()
+
+    for (v in arr) {
+        if (set.contains(v)) set.remove(v)
+        else set.add(v)
+    }
+
+    return set.first() // set.iterator().next()
+}
+```
+
+HashSet을 사용해도 마지막 테스 항목에서 타임아웃 발생. `TIMEOUT ERROR running time: 1.244 sec., time limit: 0.432 sec.`
+
 
 > 번외 : `step`을 이용한 비교
 
